@@ -1,0 +1,9 @@
+body{
+  background-image: url('./XO.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 92.4vh;
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
