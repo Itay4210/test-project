@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import socket from "./../hooks/socket";
 import {Button, Input, Typography } from "antd";
 import { notification } from "antd";
-const { Title, Text } = Typography;
+const { Text } = Typography;
 
 const JoinGame: React.FC = () => {
     const [gameId, setGameId] = useState<string>("");
@@ -24,13 +24,6 @@ const JoinGame: React.FC = () => {
             navigate(`/game/${gameId}`);
         }
     };
-
-    const handleCopyGameId = () => {
-        navigator.clipboard.writeText(gameId);
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
-    };
-
     socket.on("gameJoined", (data: { gameId: string }) => {
         setGameId(data.gameId);
         setError("");
@@ -49,7 +42,7 @@ const JoinGame: React.FC = () => {
                     description: "המשחק כבר מלא! לא ניתן להצטרף.",
                     placement: "topRight",
                 });
-                navigate("/"); // ✅ מחזיר לדף הראשי
+                navigate("/");
             }
         });
     

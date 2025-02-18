@@ -14,7 +14,6 @@ const joinGame = (socket, io) => {
 
         const game = games[gameId];
 
-        // ✅ אם השחקן כבר במשחק, שלח לו שוב את `gameJoined` (למקרה של רענון דף)
         const existingPlayer = game.players.find(player => player.id === socket.id);
         if (existingPlayer) {
             console.log(`⚠️ השחקן ${socket.id} כבר במשחק, שולח לו את הנתונים שוב.`);
@@ -22,7 +21,7 @@ const joinGame = (socket, io) => {
             return;
         }
 
-        // ✅ אם יש כבר שני שחקנים, לא מאפשרים כניסה
+ 
         if (game.players.length >= 2) {
             console.log(`❌ המשחק ${gameId} כבר מלא.`);
             socket.emit("error", "המשחק כבר מלא!");
@@ -31,21 +30,19 @@ const joinGame = (socket, io) => {
 
         socket.join(gameId);
 
-        // ✅ השחקן הראשון מקבל תמיד `X`, והשני `O`
+
         const playerSymbol = game.players.length === 0 ? "X" : "O";
 
-        // ✅ מוסיפים את השחקן אחרי שהוחלט הסמל
+
         game.players.push({ id: socket.id, symbol: playerSymbol });
 
         console.log(`🔵 שחקן הצטרף: ${socket.id}, קיבל ${playerSymbol}`);
 
-        // ✅ שולחים לשחקן שהצטרף את `gameJoined`
         socket.emit("gameJoined", { gameId, symbol: playerSymbol, board: game.board });
 
-        // ✅ שולחים לכל המשתתפים מידע על מצב השחקנים
+
         io.to(gameId).emit("playersUpdate", game.players.map(player => player.symbol));
 
-        // ✅ אם שני שחקנים מחוברים - שולחים הודעת התחלת משחק
         if (game.players.length === 2) {
             io.to(gameId).emit("startGame", { firstPlayer: "X" });
         }
@@ -59,17 +56,15 @@ const makeMove = (socket, io) => {
         const game = games[gameId];
         if (!game || game.board[index] !== null || game.turn !== symbol) return;
 
-        // עדכון מצב הלוח
         game.board[index] = symbol;
         game.turn = game.turn === "X" ? "O" : "X";
 
         io.to(gameId).emit("updateBoard", { board: game.board, turn: game.turn });
 
-        // בדיקה אם יש מנצח
         const winner = checkWinner(game.board);
         if (winner) {
             io.to(gameId).emit("gameOver", { winner });
-            delete games[gameId]; // איפוס המשחק
+            delete games[gameId];
         } else if (!game.board.includes(null)) {
             io.to(gameId).emit("gameOver", { winner: "TIE" });
             delete games[gameId];
