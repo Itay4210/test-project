@@ -16,14 +16,12 @@ const joinGame = (socket, io) => {
 
         const existingPlayer = game.players.find(player => player.id === socket.id);
         if (existingPlayer) {
-            console.log(`⚠️ השחקן ${socket.id} כבר במשחק, שולח לו את הנתונים שוב.`);
             socket.emit("gameJoined", { gameId, symbol: existingPlayer.symbol, board: game.board });
             return;
         }
 
  
         if (game.players.length >= 2) {
-            console.log(`❌ המשחק ${gameId} כבר מלא.`);
             socket.emit("error", "המשחק כבר מלא!");
             return;
         }
@@ -35,8 +33,6 @@ const joinGame = (socket, io) => {
 
 
         game.players.push({ id: socket.id, symbol: playerSymbol });
-
-        console.log(`🔵 שחקן הצטרף: ${socket.id}, קיבל ${playerSymbol}`);
 
         socket.emit("gameJoined", { gameId, symbol: playerSymbol, board: game.board });
 
